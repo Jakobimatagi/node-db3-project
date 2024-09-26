@@ -6,8 +6,27 @@
     "message": "scheme with scheme_id <actual id> not found"
   }
 */
-const checkSchemeId = (req, res, next) => {
 
+const db = require("../../data/db-config")
+
+function checkSchemeId() {
+  return async (req, res, next)=>{
+    try{
+      const {id} = req.params.id
+      const user = db("schemes").select("*").where("scheme_id", id)
+
+      if (!user){
+        return res.status(404).json({
+          message: `scheme with scheme_id ${id} not found`
+        })
+      }
+
+      req.user = user
+      next()
+    } catch(err){
+      next(err)
+    }
+  }
 }
 
 /*
